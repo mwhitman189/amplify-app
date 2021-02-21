@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import dotenv from 'dotenv';
 import { API } from 'aws-amplify';
 import { listShips } from './graphql/queries';
 import { createShip as createShipMutation, deleteShip as deleteShipMutation } from './graphql/mutations';
@@ -6,7 +7,6 @@ import './App.css';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { Marker } from '@react-google-maps/api';
-
 
 const initialFormState = { name: '', description: '', location: { lat: '', lng: '' } };
 
@@ -31,7 +31,7 @@ function App() {
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: "AIzaSyBWOahmnAYJ-8MrFRlPeQAmN05vcTVvjz4"
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API,
   });
 
   const onLoad = React.useCallback(function callback(map) {
@@ -59,7 +59,7 @@ function App() {
 
   async function fetchWeather(latLng) {
     const { lat, lng } = latLng;
-    const locQueryUrl = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search.json?q=${lat},${lng}&apikey=6s93tX9pbjwq0hR23EKxHLNm7CRACZx6&toplevel=false`;
+    const locQueryUrl = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search.json?q=${lat},${lng}&apikey=${process.env.WEATHER_API}&toplevel=false`;
     let locKey;
     await fetch(locQueryUrl)
       .then(response => response.json())
@@ -67,7 +67,7 @@ function App() {
         return locKey = data.Key;
       });
 
-    await fetch(`http://dataservice.accuweather.com/currentconditions/v1/${locKey}?language=en-us&apikey=6s93tX9pbjwq0hR23EKxHLNm7CRACZx6`)
+    await fetch(`http://dataservice.accuweather.com/currentconditions/v1/${locKey}?language=en-us&apikey=${process.env.WEATHER_API}`)
       .then(response => response.json())
       .then(data => setWeatherData([ ...weatherData, data ]));
   }
