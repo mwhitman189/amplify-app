@@ -1,0 +1,28 @@
+type Ship @model {
+  id: ID!
+  name: String!
+  description: String
+  location: Location!
+}
+
+type WeatherEvent @model {
+  id: ID!
+  name: String!
+  description: String
+  isActive: Boolean!
+  location: Location!
+}
+
+type Location {   
+  lat: Float!   
+  lng: Float! 
+}
+
+input LocationInput {
+  lat: Float!
+  lng: Float!
+}
+
+type mutation {
+  createShip(name: String, description: String, location: LocationInput!): Ship
+}
